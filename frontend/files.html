@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File Sharing Studio – ProxiLink Wireless Platform</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <style>
+    .drop-zone {
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 3rem 2rem;
+      text-align: center;
+      background: var(--bg-input);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .drop-zone:hover {
+      border-color: var(--primary);
+      background: rgba(99, 102, 241, 0.05);
+    }
+    .drop-zone-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: rgba(99, 102, 241, 0.12);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <nav class="navbar">
+    <div class="brand-container">
+      <a href="dashboard.html" class="flex items-center gap-2">
+        <div class="brand-logo">
+          <i class="fa-solid fa-link" style="color:#FFF"></i>
+        </div>
+        <span class="brand-text">Proxi<span>Link</span></span>
+      </a>
+    </div>
+
+    <div class="nav-actions">
+      <button class="btn btn-ghost btn-sm theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+        <i class="fa-solid fa-sun"></i>
+      </button>
+      <a href="dashboard.html" class="btn btn-ghost btn-sm">
+        <i class="fa-solid fa-arrow-left"></i> Dashboard
+      </a>
+    </div>
+  </nav>
+
+  <!-- Dashboard Shell -->
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-heading">Platform</div>
+      <a href="dashboard.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-gauge-high"></i> <span>Dashboard</span>
+      </a>
+      <a href="wifi.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-wifi"></i> <span>Wi-Fi P2P</span>
+      </a>
+      <a href="bluetooth.html" class="sidebar-nav-item">
+        <i class="fa-brands fa-bluetooth-b"></i> <span>Bluetooth BLE</span>
+      </a>
+      <a href="chat.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-comments"></i> <span>Messaging</span>
+      </a>
+      <a href="files.html" class="sidebar-nav-item active">
+        <i class="fa-solid fa-file-arrow-up"></i> <span>File Sharing</span>
+      </a>
+
+      <div class="sidebar-heading" style="margin-top:1rem">Audit &amp; Config</div>
+      <a href="history.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-clock-rotate-left"></i> <span>Transfer History</span>
+      </a>
+      <a href="settings.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-gear"></i> <span>Settings</span>
+      </a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="flex items-center justify-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h2>📁 High-Speed File Sharing Studio</h2>
+          <p>Transfer documents, images, and archives directly to nearby peers up to 500 MB without internet.</p>
+        </div>
+        <span class="proto-badge proto-webrtc"><i class="fa-solid fa-bolt"></i> 64KB Sliced Streaming</span>
+      </div>
+
+      <!-- Mode Selector & Recipient Card -->
+      <div class="card" style="margin-bottom: 1.5rem; padding: 1.25rem 1.5rem;">
+        <div class="flex items-center justify-between" style="flex-wrap: wrap; gap: 1rem;">
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1" style="background:var(--bg-input);padding:0.25rem;border-radius:var(--radius-sm);border:1px solid var(--border-subtle)">
+              <button id="file-mode-wifi" class="btn btn-primary btn-sm" onclick="setFileSharingMode('wifi')">
+                <i class="fa-solid fa-wifi"></i> Wi-Fi P2P (Max 500 MB)
+              </button>
+              <button id="file-mode-bt" class="btn btn-ghost btn-sm" onclick="setFileSharingMode('bluetooth')">
+                <i class="fa-brands fa-bluetooth-b"></i> Bluetooth BLE (Max 2 MB)
+              </button>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-muted">Destination Peer:</span>
+            <select id="recipient-select" class="form-control" style="max-width:280px;padding:0.4rem 0.8rem;font-size:0.85rem">
+              <!-- Populated by file-sharing.js -->
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drag & Drop Zone -->
+      <div class="drop-zone" id="file-drop-zone">
+        <div class="drop-zone-icon">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+        </div>
+        <div>
+          <h3 style="margin-bottom:0.35rem">Drag and drop files here</h3>
+          <p class="text-sm">Or click to browse from device (PDF, PNG, JPG, MP4, ZIP)</p>
+        </div>
+        <div class="flex gap-2">
+          <span class="badge badge-primary">Images</span>
+          <span class="badge badge-secondary">PDFs</span>
+          <span class="badge badge-success">Archives</span>
+          <span class="badge badge-warning">Max 500 MB</span>
+        </div>
+        <input type="file" id="file-input-field" class="hidden" />
+      </div>
+
+      <!-- Selected File Preview Card (Hidden initially) -->
+      <div class="card hidden" id="file-preview-card" style="margin-top: 1.5rem; border-color: var(--secondary); background: rgba(59,130,246,0.06);">
+        <div class="flex items-center justify-between" style="flex-wrap:wrap;gap:1rem">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-file text-primary" id="preview-file-icon" style="font-size:2rem"></i>
+            <div>
+              <div style="font-weight:700;font-size:1rem" id="preview-file-name">filename.ext</div>
+              <div class="text-xs text-muted">
+                Size: <strong id="preview-file-size">0 B</strong> • Type: <span id="preview-file-type">Unknown</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn btn-primary" onclick="startFileTransmission()">
+              <i class="fa-solid fa-paper-plane"></i> Transmit File
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="clearSelectedFile()">
+              <i class="fa-solid fa-trash"></i> Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Transmission Progress Panel (Hidden initially) -->
+      <div class="card hidden" id="transfer-active-panel" style="margin-top: 1.5rem; border-color: var(--primary); background: rgba(99,102,241,0.08);">
+        <div class="flex items-center justify-between" style="margin-bottom: 0.75rem;">
+          <div>
+            <div style="font-weight:700;font-size:0.95rem" id="tf-display-name">Transferring payload...</div>
+            <div class="text-xs text-muted" id="tf-bytes-count">0 B / 0 B</div>
+          </div>
+          <div class="text-right">
+            <div style="font-weight:800;font-size:1.15rem;color:var(--primary)" id="tf-percent-text">0%</div>
+            <div class="text-xs text-muted" id="tf-speed">0 MB/s</div>
+          </div>
+        </div>
+
+        <div class="progress-container" style="margin-bottom: 1rem;">
+          <div class="progress-bar animated" id="tf-progress-bar"></div>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <span class="text-xs text-muted"><i class="fa-solid fa-shield-halved text-success"></i> Streaming chunks directly over LAN</span>
+          <button class="btn btn-danger btn-sm" onclick="cancelActiveTransfer()">
+            <i class="fa-solid fa-xmark"></i> Abort Transfer
+          </button>
+        </div>
+      </div>
+
+      <!-- Completed Transfers in this session -->
+      <div class="card" style="margin-top: 2rem;">
+        <div class="card-header">
+          <h4 class="card-title"><i class="fa-solid fa-circle-check text-success"></i> Delivered In This Session</h4>
+          <a href="history.html" class="btn btn-ghost btn-sm">Full Audit Log</a>
+        </div>
+        <div id="completed-transfers-list" class="flex flex-col gap-2">
+          <div class="text-center text-muted text-sm empty-notice" style="padding:1.5rem">
+            No transfers completed in current session. Drop a file above to begin!
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/webrtc-p2p.js"></script>
+  <script src="js/bluetooth-ble.js"></script>
+  <script src="js/unified-comms.js"></script>
+  <script src="js/file-sharing.js"></script>
+</body>
+</html>

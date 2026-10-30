@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wi-Fi P2P Manager – ProxiLink Wireless Platform</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="brand-container">
+      <a href="dashboard.html" class="flex items-center gap-2">
+        <div class="brand-logo">
+          <i class="fa-solid fa-link" style="color:#FFF"></i>
+        </div>
+        <span class="brand-text">Proxi<span>Link</span></span>
+      </a>
+    </div>
+
+    <div class="nav-actions">
+      <button class="btn btn-ghost btn-sm theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+        <i class="fa-solid fa-sun"></i>
+      </button>
+      <a href="dashboard.html" class="btn btn-ghost btn-sm">
+        <i class="fa-solid fa-arrow-left"></i> Dashboard
+      </a>
+    </div>
+  </nav>
+
+  <!-- Dashboard Layout -->
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-heading">Platform</div>
+      <a href="dashboard.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-gauge-high"></i> <span>Dashboard</span>
+      </a>
+      <a href="wifi.html" class="sidebar-nav-item active">
+        <i class="fa-solid fa-wifi"></i> <span>Wi-Fi P2P</span>
+      </a>
+      <a href="bluetooth.html" class="sidebar-nav-item">
+        <i class="fa-brands fa-bluetooth-b"></i> <span>Bluetooth BLE</span>
+      </a>
+      <a href="chat.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-comments"></i> <span>Messaging</span>
+      </a>
+      <a href="files.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-file-arrow-up"></i> <span>File Sharing</span>
+      </a>
+
+      <div class="sidebar-heading" style="margin-top:1rem">Audit &amp; Config</div>
+      <a href="history.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-clock-rotate-left"></i> <span>Transfer History</span>
+      </a>
+      <a href="settings.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-gear"></i> <span>Settings</span>
+      </a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <div class="flex items-center justify-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h2>📶 Wi-Fi Connection Manager</h2>
+          <p>Discover neighboring devices on your local Wi-Fi subnet and establish WebRTC P2P channels.</p>
+        </div>
+        <button class="btn btn-primary" id="scan-btn" onclick="startScan()">
+          <i class="fa-solid fa-magnifying-glass"></i> Scan for Devices
+        </button>
+      </div>
+
+      <!-- Local Network Status Grid -->
+      <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <div class="card">
+          <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:700">Local IP Address</div>
+          <div style="font-size:1.25rem;font-weight:700;margin:0.4rem 0" id="wifi-local-ip">192.168.1.104</div>
+          <div class="text-xs text-success"><i class="fa-solid fa-check"></i> Connected to LAN</div>
+        </div>
+        <div class="card">
+          <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:700">Subnet Mask</div>
+          <div style="font-size:1.25rem;font-weight:700;margin:0.4rem 0">255.255.255.0</div>
+          <div class="text-xs text-muted">Class C Local Subnet</div>
+        </div>
+        <div class="card">
+          <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:700">Signalling Gateway</div>
+          <div style="font-size:1.25rem;font-weight:700;margin:0.4rem 0">Port 3000</div>
+          <div class="text-xs text-success"><i class="fa-solid fa-circle-check"></i> WebSocket Ready</div>
+        </div>
+        <div class="card">
+          <div class="text-xs text-muted" style="text-transform:uppercase;font-weight:700">Transfer Encryption</div>
+          <div style="font-size:1.25rem;font-weight:700;margin:0.4rem 0">DTLS / SRTP</div>
+          <div class="text-xs text-primary"><i class="fa-solid fa-lock"></i> Zero Cloud Exposure</div>
+        </div>
+      </div>
+
+      <!-- Active Peer Status Panel (Shown when connected) -->
+      <div class="card hidden" id="peer-status-panel" style="margin-bottom: 2rem; border-color: var(--success); background: rgba(16, 185, 129, 0.05);">
+        <div class="flex items-center justify-between" style="flex-wrap:wrap;gap:1rem">
+          <div class="flex items-center gap-3">
+            <div style="width:48px;height:48px;border-radius:50%;background:var(--success);display:flex;align-items:center;justify-content:center;color:#FFF;font-size:1.3rem">
+              <i class="fa-solid fa-link"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="badge badge-success">P2P Channel Active</span>
+                <span class="text-xs text-muted">WebRTC DataChannel</span>
+              </div>
+              <h3 style="margin-top:0.25rem" id="conn-peer-name">Peer Device</h3>
+              <div class="text-xs text-muted">Endpoint: <span id="conn-peer-ip">192.168.1.105</span> • Latency: <strong id="conn-latency" class="text-success">3 ms</strong></div>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <a href="chat.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-comments"></i> Open Chat</a>
+            <a href="files.html" class="btn btn-secondary btn-sm"><i class="fa-solid fa-file-arrow-up"></i> Send File</a>
+            <button class="btn btn-danger btn-sm" onclick="disconnectPeer()"><i class="fa-solid fa-link-slash"></i> Disconnect</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Radar Animation Container (shown while scanning) -->
+      <div class="radar-wrapper hidden" id="wifi-radar">
+        <div class="radar-circle"></div>
+        <div class="radar-circle"></div>
+        <div class="radar-circle"></div>
+        <div class="radar-center">
+          <i class="fa-solid fa-wifi"></i>
+        </div>
+      </div>
+
+      <!-- Discovery Section -->
+      <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+          <h4 class="card-title"><i class="fa-solid fa-tower-broadcast text-secondary"></i> Discovered Nearby Devices</h4>
+          <span class="text-xs text-muted" id="scan-status-text">Click "Scan for Devices" to broadcast discovery packets</span>
+        </div>
+
+        <div id="device-list" class="flex flex-col gap-3">
+          <!-- Populated by wifi.js -->
+        </div>
+      </div>
+
+      <!-- Technical Architecture Educational Note -->
+      <div class="card" style="background: rgba(99, 102, 241, 0.06); border-color: var(--border-color);">
+        <h4 style="color:var(--primary);margin-bottom:0.5rem"><i class="fa-solid fa-circle-info"></i> How Wi-Fi P2P Works in ProxiLink</h4>
+        <p class="text-sm" style="line-height:1.7">
+          • <strong>Browser WebRTC P2P:</strong> Devices connected to the same Wi-Fi network exchange lightweight SDP offers/answers over local WebSocket signalling, then form a direct, encrypted <code>RTCDataChannel</code> with zero internet data consumption.<br>
+          • <strong>Router-Free Wi-Fi Direct:</strong> Web browsers cannot directly access low-level Wi-Fi Direct radio chips due to operating system sandbox restrictions. For true infrastructure-less peer discovery without an access point, ProxiLink provides the native Android service in <code>android/WiFiDirectTransferService.kt</code>.
+        </p>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/webrtc-p2p.js"></script>
+  <script src="js/wifi.js"></script>
+</body>
+</html>

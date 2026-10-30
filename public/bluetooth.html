@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ProxiLink – Bluetooth</title>
+  <link rel="stylesheet" href="/css/main.css"/>
+  <style>
+    .bt-layout { max-width: 800px; margin: 0 auto; padding: 1.5rem; }
+    .bt-header-card {
+      background: linear-gradient(135deg, rgba(6,182,212,.2), rgba(99,102,241,.15));
+      border: 1px solid rgba(6,182,212,.3);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .bt-scan-area {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 1.5rem; padding: 2rem 0;
+    }
+    .bt-ring {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      border: 3px solid rgba(6,182,212,.3);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      font-size: 2.5rem;
+    }
+    .bt-ring.scanning::before, .bt-ring.scanning::after {
+      content: '';
+      position: absolute; inset: -12px; border-radius: 50%;
+      border: 2px solid var(--clr-secondary);
+      animation: ripple 2s linear infinite;
+    }
+    .bt-ring.scanning::after { animation-delay: 1s; }
+    @keyframes ripple {
+      from { transform: scale(1); opacity: 1; }
+      to   { transform: scale(1.5); opacity: 0; }
+    }
+    .device-card {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem;
+      cursor: pointer;
+      transition: all var(--trans-med);
+    }
+    .device-card:hover { border-color: var(--clr-secondary); transform: translateX(4px); }
+    .device-card.connected { border-color: var(--clr-success); background: rgba(16,185,129,.05); }
+    .device-icon { font-size: 1.75rem; }
+    .device-info { flex: 1; }
+    .device-name { font-weight: 600; font-size: .9rem; }
+    .device-meta { font-size: .75rem; color: var(--clr-text-muted); }
+    .rssi-bar {
+      display: flex; gap: 2px; align-items: flex-end;
+    }
+    .rssi-bar span {
+      display: inline-block; width: 4px; background: var(--clr-secondary);
+      border-radius: 2px;
+    }
+
+    /* BLE chat area */
+    .ble-chat {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .ble-chat-header {
+      padding: .75rem 1rem;
+      background: var(--clr-surface2);
+      border-bottom: 1px solid var(--clr-border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .ble-messages {
+      height: 240px; overflow-y: auto;
+      padding: 1rem; display: flex; flex-direction: column; gap: .5rem;
+    }
+    .ble-input { display: flex; gap: .5rem; padding: .75rem; border-top: 1px solid var(--clr-border); }
+    .ble-msg { padding: .4rem .75rem; border-radius: var(--radius-sm); font-size: .85rem; max-width: 80%; }
+    .ble-msg.sent { background: var(--clr-secondary); color: #fff; align-self: flex-end; }
+    .ble-msg.recv { background: var(--clr-surface2); align-self: flex-start; }
+
+    /* Limitations notice */
+    .notice-box {
+      background: rgba(245,158,11,.08);
+      border: 1px solid rgba(245,158,11,.3);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      font-size: .85rem;
+    }
+    .notice-box h4 { color: var(--clr-warning); margin-bottom: .5rem; }
+    .notice-box li { color: var(--clr-text-muted); margin-left: 1rem; line-height: 1.8; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="brand"><a href="/dashboard" style="color:inherit;text-decoration:none">🔗 Proxi<span style="color:var(--clr-primary)">Link</span></a></div>
+    <div class="nav-links">
+      <a href="/dashboard" class="btn btn-ghost btn-sm">← Dashboard</a>
+    </div>
+  </nav>
+
+  <div class="bt-layout">
+    <!-- Header -->
+    <div class="bt-header-card">
+      <h1 style="font-size:1.6rem;margin-bottom:.3rem">🔵 Bluetooth Communication</h1>
+      <p>Discover and connect to nearby BLE (Bluetooth Low Energy) devices using the Web Bluetooth API.
+         Supported in Google Chrome on Android and desktop.</p>
+    </div>
+
+    <!-- Browser Support Check -->
+    <div id="bt-not-supported" class="alert alert-error hidden">
+      ⚠ <strong>Web Bluetooth API is not supported in this browser.</strong>
+      Please use <strong>Google Chrome</strong> (v56+) on Android or desktop.
+      Firefox, Safari, and iOS Chrome are not supported.
+    </div>
+
+    <div id="bt-supported" class="hidden">
+      <!-- Scan Section -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header">
+          <h3>🔍 Device Discovery</h3>
+          <div id="scan-status" class="badge badge-warning">Not Scanning</div>
+        </div>
+
+        <div class="bt-scan-area">
+          <div class="bt-ring" id="bt-ring">🔵</div>
+          <div style="text-align:center">
+            <p id="scan-hint" class="text-muted" style="margin-bottom:1rem">
+              Click Scan to discover nearby Bluetooth Low Energy devices.
+            </p>
+            <button class="btn btn-secondary" id="scan-btn" onclick="startScan()">
+              🔍 Scan for Devices
+            </button>
+          </div>
+        </div>
+
+        <!-- Device list -->
+        <div id="device-list" style="display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem"></div>
+      </div>
+
+      <!-- BLE Chat (shown when connected) -->
+      <div class="card hidden" id="ble-chat-card" style="margin-bottom:1rem">
+        <div class="card-header">
+          <h3>💬 BLE Messaging</h3>
+          <div class="flex gap-2">
+            <div id="ble-conn-status" class="badge badge-success">Connected</div>
+            <button onclick="bleDisconnect()" class="btn btn-danger btn-sm">Disconnect</button>
+          </div>
+        </div>
+        <p class="text-muted text-sm" style="margin-bottom:.75rem">
+          Connected to: <strong id="connected-device-name">—</strong>
+        </p>
+        <div class="ble-chat">
+          <div class="ble-chat-header">
+            <span class="text-sm">BLE Messages</span>
+            <span class="text-xs text-muted">Limited to small text messages (MTU ~512 bytes)</span>
+          </div>
+          <div class="ble-messages" id="ble-messages">
+            <div class="empty-state" style="padding:1rem"><p>No messages yet.</p></div>
+          </div>
+          <div class="ble-input">
+            <input type="text" id="ble-msg-input" placeholder="Type a short message..."
+                   maxlength="200" onkeydown="if(event.key==='Enter')bleSend()" />
+            <button class="btn btn-secondary" onclick="bleSend()">Send</button>
+          </div>
+        </div>
+        <p class="text-xs text-muted" style="margin-top:.5rem">
+          ⚠ BLE text transfer is limited. Large file transfer requires a native Android app.
+        </p>
+      </div>
+
+      <!-- Limitations Notice -->
+      <div class="notice-box">
+        <h4>⚠ Important: Web Bluetooth Limitations</h4>
+        <ul>
+          <li>Only <strong>Bluetooth Low Energy (BLE)</strong> is accessible from browsers — not Classic Bluetooth.</li>
+          <li>Maximum reliable data per write: <strong>~512 bytes</strong> (BLE MTU limit). Not suitable for large files.</li>
+          <li>Only works in <strong>Google Chrome</strong>. Firefox, Safari, and iOS Chrome do not support Web Bluetooth.</li>
+          <li>Apple iOS devices <strong>cannot use this feature</strong> — Apple restricts Web Bluetooth in Safari and iOS Chrome.</li>
+          <li>The browser requires a <strong>user gesture</strong> to initiate Bluetooth scanning.</li>
+          <li>For Wi-Fi Direct or Classic Bluetooth file transfer, a <strong>native Android app</strong> is required.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="/js/utils.js"></script>
+  <script src="/js/bluetooth.js"></script>
+</body>
+</html>

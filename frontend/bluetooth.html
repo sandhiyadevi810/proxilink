@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bluetooth BLE – ProxiLink Wireless Platform</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="brand-container">
+      <a href="dashboard.html" class="flex items-center gap-2">
+        <div class="brand-logo">
+          <i class="fa-solid fa-link" style="color:#FFF"></i>
+        </div>
+        <span class="brand-text">Proxi<span>Link</span></span>
+      </a>
+    </div>
+
+    <div class="nav-actions">
+      <button class="btn btn-ghost btn-sm theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+        <i class="fa-solid fa-sun"></i>
+      </button>
+      <a href="dashboard.html" class="btn btn-ghost btn-sm">
+        <i class="fa-solid fa-arrow-left"></i> Dashboard
+      </a>
+    </div>
+  </nav>
+
+  <!-- Dashboard Layout -->
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-heading">Platform</div>
+      <a href="dashboard.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-gauge-high"></i> <span>Dashboard</span>
+      </a>
+      <a href="wifi.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-wifi"></i> <span>Wi-Fi P2P</span>
+      </a>
+      <a href="bluetooth.html" class="sidebar-nav-item active">
+        <i class="fa-brands fa-bluetooth-b"></i> <span>Bluetooth BLE</span>
+      </a>
+      <a href="chat.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-comments"></i> <span>Messaging</span>
+      </a>
+      <a href="files.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-file-arrow-up"></i> <span>File Sharing</span>
+      </a>
+
+      <div class="sidebar-heading" style="margin-top:1rem">Audit &amp; Config</div>
+      <a href="history.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-clock-rotate-left"></i> <span>Transfer History</span>
+      </a>
+      <a href="settings.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-gear"></i> <span>Settings</span>
+      </a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="flex items-center justify-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h2>🔵 Bluetooth Low Energy (BLE)</h2>
+          <p>Scan and communicate with nearby Bluetooth Low Energy peripherals using Web Bluetooth.</p>
+        </div>
+        <button class="btn btn-primary" id="bt-scan-btn" onclick="requestBleDevice()">
+          <i class="fa-brands fa-bluetooth-b"></i> Scan for BLE Devices
+        </button>
+      </div>
+
+      <!-- Browser Compatibility Alert (Shown if not supported) -->
+      <div id="ble-not-supported" class="card hidden" style="border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.08); margin-bottom: 2rem;">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-triangle-exclamation text-danger" style="font-size:1.5rem"></i>
+          <div>
+            <h4 style="color:var(--danger)">Web Bluetooth API Not Available in This Browser</h4>
+            <p class="text-sm" style="margin-top:0.25rem">
+              Web Bluetooth requires <strong>Google Chrome</strong> (v56+) on Android or Windows/macOS. Firefox, Safari, and iOS browsers do not implement the Web Bluetooth specification.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div id="ble-supported-container">
+        <!-- Connected BLE Terminal Card -->
+        <div class="card hidden" id="ble-chat-card" style="margin-bottom: 2rem; border-color: var(--accent); background: rgba(139, 92, 246, 0.05);">
+          <div class="card-header">
+            <div class="flex items-center gap-2">
+              <span class="badge badge-success">GATT Server Connected</span>
+              <h4 id="connected-ble-name" style="margin:0">BLE Peripheral</h4>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="disconnectBle()">Disconnect</button>
+          </div>
+
+          <div id="ble-log" style="height:180px;overflow-y:auto;background:var(--bg-input);padding:1rem;border-radius:var(--radius-sm);border:1px solid var(--border-subtle);display:flex;flex-direction:column;margin-bottom:1rem">
+            <div class="text-xs text-muted text-center" style="margin:auto">GATT Characteristic Notifications Active • Ready to transmit</div>
+          </div>
+
+          <div class="flex gap-2" style="margin-bottom: 1.5rem;">
+            <input type="text" id="ble-input" class="form-control" placeholder="Send short BLE packet (max 200 chars)..." onkeydown="if(event.key==='Enter')sendBleMessage()" />
+            <button class="btn btn-primary" onclick="sendBleMessage()"><i class="fa-solid fa-paper-plane"></i> Send</button>
+          </div>
+
+          <!-- BLE File Transfer Drop Zone -->
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 1.25rem;">
+            <div class="flex items-center justify-between" style="margin-bottom:0.75rem">
+              <h5 style="margin:0;font-size:0.95rem"><i class="fa-solid fa-file-arrow-up text-accent"></i> BLE Chunked File Sharing</h5>
+              <span class="text-xs text-muted">Supports images, vCards, notes, PDFs up to 2 MB</span>
+            </div>
+
+            <div class="flex gap-2 items-center">
+              <input type="file" id="ble-file-input" style="display:none" onchange="handleBleFileSelected(event)" />
+              <button class="btn btn-secondary btn-sm" onclick="document.getElementById('ble-file-input').click()">
+                <i class="fa-solid fa-paperclip"></i> Select Image / Document
+              </button>
+              <span id="ble-file-name" class="text-xs text-muted">No file chosen</span>
+              <button class="btn btn-primary btn-sm hidden" id="ble-send-file-btn" onclick="sendBleFile()">
+                <i class="fa-solid fa-upload"></i> Send via BLE
+              </button>
+            </div>
+
+            <!-- BLE File Transfer Progress -->
+            <div id="ble-transfer-progress" class="hidden" style="margin-top: 1rem; padding: 0.75rem; background: var(--bg-surface-solid); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+              <div class="flex justify-between text-xs" style="margin-bottom: 0.35rem;">
+                <span id="ble-tf-name" style="font-weight:600">Uploading file...</span>
+                <span id="ble-tf-speed" class="text-accent">0 KB/s</span>
+              </div>
+              <div class="progress-bar-container" style="height: 6px;">
+                <div class="progress-bar" id="ble-tf-bar" style="width: 0%; background: linear-gradient(90deg, var(--accent), var(--primary));"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Radar Animation while scanning -->
+        <div class="radar-wrapper hidden" id="bt-radar">
+          <div class="radar-circle" style="border-color:var(--accent)"></div>
+          <div class="radar-circle" style="border-color:var(--accent)"></div>
+          <div class="radar-circle" style="border-color:var(--accent)"></div>
+          <div class="radar-center" style="background:linear-gradient(135deg, var(--accent), var(--primary))">
+            <i class="fa-brands fa-bluetooth-b"></i>
+          </div>
+        </div>
+
+        <!-- Discovered BLE Devices List -->
+        <div class="card" style="margin-bottom: 2rem;">
+          <div class="card-header">
+            <h4 class="card-title"><i class="fa-brands fa-bluetooth-b text-accent"></i> Available BLE Peripherals</h4>
+            <span class="text-xs text-muted">Nearby advertising devices</span>
+          </div>
+
+          <div id="ble-device-list" class="flex flex-col gap-3">
+            <!-- Populated by bluetooth.js -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Technical Limitations & Native Android Implementation Notice -->
+      <div class="card" style="background: rgba(245, 158, 11, 0.06); border-color: rgba(245, 158, 11, 0.25);">
+        <h4 style="color:var(--warning);margin-bottom:0.5rem"><i class="fa-solid fa-shield-halved"></i> Web Bluetooth Technical Scope &amp; Android Bridge</h4>
+        <p class="text-sm" style="line-height:1.7">
+          • <strong>Browser Restrictions:</strong> Web Bluetooth is strictly limited to <strong>BLE GATT Client</strong> operations with a packet MTU of 20–512 bytes. It cannot transfer large multi-megabyte files or act as a Bluetooth Classic RFCOMM serial socket.<br>
+          • <strong>Native Android Solution:</strong> For high-speed Classic Bluetooth binary file transfer without router infrastructure, ProxiLink includes a native Kotlin module located in <code>android/BluetoothFileTransferService.kt</code> with standard SPP UUID (<code>00001101-0000-1000-8000-00805F9B34FB</code>) and OBEX profile support in <code>android/BluetoothOBEXTransferService.kt</code>.
+        </p>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="js/main.js"></script>
+  <script src="js/bluetooth-ble.js"></script>
+  <script src="js/bluetooth.js"></script>
+</body>
+</html>

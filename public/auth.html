@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProxiLink – Login / Register</title>
+  <link rel="stylesheet" href="/css/main.css" />
+  <style>
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .auth-wrapper {
+      width: 100%;
+      max-width: 420px;
+      padding: 1rem;
+    }
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .auth-logo .logo-mark {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--clr-text);
+    }
+    .auth-logo .logo-mark span { color: var(--clr-primary); }
+    .auth-logo p { color: var(--clr-text-muted); font-size: .875rem; }
+
+    .auth-card {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* Tab switcher */
+    .tab-switcher {
+      display: flex;
+      background: var(--clr-bg);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+      margin-bottom: 1.5rem;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: .5rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--clr-text-muted);
+      font-family: var(--font);
+      font-size: .875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--trans-fast);
+    }
+    .tab-btn.active {
+      background: var(--clr-primary);
+      color: #fff;
+    }
+
+    #register-only { display: none; }
+    .auth-footer {
+      text-align: center;
+      margin-top: 1.25rem;
+      font-size: .8rem;
+      color: var(--clr-text-muted);
+    }
+
+    .bg-dots {
+      position: fixed; inset: 0; z-index: -1;
+      background-image: radial-gradient(var(--clr-border) 1px, transparent 1px);
+      background-size: 32px 32px;
+      opacity: .4;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-dots"></div>
+
+  <div class="auth-wrapper">
+    <div class="auth-logo">
+      <div class="logo-mark">🔗 Proxi<span>Link</span></div>
+      <p>Offline Wireless Communication Platform</p>
+    </div>
+
+    <div class="auth-card">
+      <div class="tab-switcher">
+        <button class="tab-btn active" id="tab-login"    onclick="switchTab('login')">Login</button>
+        <button class="tab-btn"        id="tab-register" onclick="switchTab('register')">Register</button>
+      </div>
+
+      <div id="error-msg" class="alert alert-error hidden"></div>
+      <div id="success-msg" class="alert alert-success hidden"></div>
+
+      <form id="auth-form" novalidate>
+        <!-- Register-only field -->
+        <div class="form-group" id="register-only">
+          <label for="display_name">Display Name</label>
+          <input type="text" id="display_name" name="display_name"
+                 placeholder="How others will see you" maxlength="50" autocomplete="name" />
+        </div>
+
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username"
+                 placeholder="letters, numbers, underscores" maxlength="30"
+                 autocomplete="username" required />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password"
+                 placeholder="••••••••" autocomplete="current-password" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="submit-btn">
+          <span id="btn-text">Login</span>
+          <span id="btn-spinner" class="spinner hidden"></span>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <span id="switch-hint">Don't have an account? </span>
+        <a href="#" id="switch-link" onclick="switchTab('register'); return false;">Register</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="/js/utils.js"></script>
+  <script>
+    let currentTab = 'login';
+
+    // Check URL param for initial tab
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tab') === 'register') switchTab('register');
+
+    function switchTab(tab) {
+      currentTab = tab;
+      const isRegister = tab === 'register';
+
+      document.getElementById('tab-login').classList.toggle('active', !isRegister);
+      document.getElementById('tab-register').classList.toggle('active', isRegister);
+      document.getElementById('register-only').style.display = isRegister ? 'block' : 'none';
+      document.getElementById('display_name').required = isRegister;
+      document.getElementById('btn-text').textContent = isRegister ? 'Create Account' : 'Login';
+      document.getElementById('switch-hint').textContent = isRegister
+        ? 'Already have an account? ' : 'Don\'t have an account? ';
+      document.getElementById('switch-link').textContent = isRegister ? 'Login' : 'Register';
+      document.getElementById('switch-link').onclick = () => { switchTab(isRegister ? 'login' : 'register'); return false; };
+
+      clearMessages();
+      document.getElementById('auth-form').reset();
+    }
+
+    function clearMessages() {
+      ['error-msg','success-msg'].forEach(id => {
+        const el = document.getElementById(id);
+        el.textContent = '';
+        el.classList.add('hidden');
+      });
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('error-msg');
+      el.textContent = '⚠ ' + msg;
+      el.classList.remove('hidden');
+    }
+
+    function setLoading(loading) {
+      document.getElementById('submit-btn').disabled = loading;
+      document.getElementById('btn-spinner').classList.toggle('hidden', !loading);
+    }
+
+    document.getElementById('auth-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearMessages();
+
+      const username  = document.getElementById('username').value.trim();
+      const password  = document.getElementById('password').value;
+      const dispName  = document.getElementById('display_name').value.trim();
+
+      // Client-side validation
+      if (!username || !password) { showError('Username and password are required.'); return; }
+      if (!/^[a-zA-Z0-9_]{3,30}$/.test(username)) {
+        showError('Username: 3–30 characters, letters/numbers/underscores only.'); return;
+      }
+      if (password.length < 6) { showError('Password must be at least 6 characters.'); return; }
+      if (currentTab === 'register' && !dispName) { showError('Display name is required.'); return; }
+
+      setLoading(true);
+
+      try {
+        const endpoint = currentTab === 'login' ? '/api/auth/login' : '/api/auth/register';
+        const body = currentTab === 'login'
+          ? { username, password }
+          : { username, password, display_name: dispName };
+
+        const res  = await fetch(endpoint, {
+          method:      'POST',
+          headers:     { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body:        JSON.stringify(body)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(data.errors ? data.errors.join(', ') : (data.error || 'Something went wrong.'));
+          return;
+        }
+
+        // Store user info in sessionStorage for quick access in other pages
+        sessionStorage.setItem('proxilink_user', JSON.stringify(data.user));
+
+        showToast('Welcome, ' + data.user.display_name + '!', 'success');
+        setTimeout(() => { window.location.href = '/dashboard'; }, 800);
+
+      } catch (err) {
+        showError('Network error. Ensure you are connected to the ProxiLink server.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    });
+  </script>
+</body>
+</html>

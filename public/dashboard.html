@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProxiLink – Dashboard</title>
+  <link rel="stylesheet" href="/css/main.css" />
+  <style>
+    .two-col { display: grid; grid-template-columns: 300px 1fr; gap: 1rem; height: calc(100vh - 60px); overflow: hidden; }
+
+    /* Sidebar */
+    .sidebar {
+      display: flex; flex-direction: column; gap: .75rem;
+      background: var(--clr-surface);
+      border-right: 1px solid var(--clr-border);
+      overflow-y: auto; padding: 1rem;
+    }
+
+    .section-title {
+      font-size: .7rem; font-weight: 700; letter-spacing: .1em;
+      color: var(--clr-text-dim); text-transform: uppercase;
+      padding: .25rem 0; margin: .5rem 0 .25rem;
+    }
+
+    .search-box { position: relative; }
+    .search-box input {
+      padding-left: 2.2rem;
+      background: var(--clr-surface2);
+      border-color: transparent;
+    }
+    .search-box input:focus { border-color: var(--clr-primary); }
+    .search-icon {
+      position: absolute; left: .7rem; top: 50%; transform: translateY(-50%);
+      color: var(--clr-text-dim); font-size: .9rem; pointer-events: none;
+    }
+
+    /* Main area */
+    .main-area {
+      display: flex; flex-direction: column;
+      overflow: hidden; padding: 1rem;
+    }
+
+    /* Welcome card */
+    .welcome-card {
+      background: linear-gradient(135deg, rgba(99,102,241,.2), rgba(6,182,212,.15));
+      border: 1px solid rgba(99,102,241,.3);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .welcome-card h2 { font-size: 1.3rem; margin-bottom: .3rem; }
+    .welcome-card p  { font-size: .875rem; }
+
+    /* Status bar */
+    .status-bar {
+      display: flex; align-items: center; gap: 1rem;
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-md);
+      padding: .75rem 1rem;
+      margin-bottom: 1rem;
+      font-size: .8rem;
+      flex-wrap: wrap;
+      gap: .75rem;
+    }
+    .status-item { display: flex; align-items: center; gap: .4rem; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-green  { background: var(--clr-success); animation: blink 2s infinite; }
+    .dot-blue   { background: var(--clr-secondary); }
+    .dot-gray   { background: var(--clr-text-dim); }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.4;} }
+
+    /* Quick actions grid */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .action-card {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      cursor: pointer;
+      transition: all var(--trans-med);
+      display: flex; flex-direction: column; gap: .5rem;
+    }
+    .action-card:hover {
+      border-color: var(--clr-primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-glow);
+    }
+    .action-card .action-icon { font-size: 1.75rem; }
+    .action-card h3 { font-size: .9rem; margin: 0; }
+    .action-card p  { font-size: .78rem; }
+
+    /* Group create modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.7);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; animation: fadeIn .2s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      width: 100%; max-width: 440px;
+      box-shadow: var(--shadow-lg);
+    }
+    .modal h2 { margin-bottom: 1.25rem; }
+
+    @media (max-width: 768px) {
+      .two-col { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="brand">🔗 Proxi<span>Link</span></div>
+    <div class="nav-links" style="gap:.75rem">
+      <span id="nav-username" class="text-sm text-muted"></span>
+      <a href="/bluetooth" class="btn btn-ghost btn-sm">🔵 Bluetooth</a>
+      <a href="/history"   class="btn btn-ghost btn-sm">📜 History</a>
+      <button onclick="logout()" class="btn btn-ghost btn-sm">Logout</button>
+    </div>
+  </nav>
+
+  <div class="two-col">
+    <!-- Sidebar: contact list -->
+    <aside class="sidebar" id="sidebar">
+      <!-- Connection status -->
+      <div id="conn-status" class="flex items-center gap-2 text-sm">
+        <div class="dot dot-gray" id="ws-dot"></div>
+        <span id="ws-status-text">Connecting...</span>
+      </div>
+
+      <!-- Search -->
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Search users..." oninput="filterUsers(this.value)" />
+      </div>
+
+      <!-- Online Users -->
+      <div class="section-title">Online Now</div>
+      <div id="online-list">
+        <div class="empty-state" style="padding:1rem">
+          <p>No one online yet.</p>
+        </div>
+      </div>
+
+      <!-- All Users -->
+      <div class="section-title">All Users</div>
+      <div id="all-users-list">
+        <div class="empty-state" style="padding:1rem">
+          <div class="spinner"></div>
+        </div>
+      </div>
+
+      <!-- Groups -->
+      <div class="section-title" style="display:flex;justify-content:space-between;align-items:center">
+        Groups
+        <button onclick="openGroupModal()" class="btn btn-ghost btn-sm" style="font-size:.7rem;padding:.2rem .5rem">+ New</button>
+      </div>
+      <div id="group-list">
+        <div class="empty-state" style="padding:1rem"><p>No groups yet.</p></div>
+      </div>
+    </aside>
+
+    <!-- Main Area -->
+    <main class="main-area">
+      <!-- Welcome -->
+      <div class="welcome-card">
+        <h2>👋 Welcome, <span id="user-display-name">...</span></h2>
+        <p>Select a user from the left to start chatting, or share files. All communication is on your local network.</p>
+      </div>
+
+      <!-- Network Status -->
+      <div class="status-bar">
+        <div class="status-item">
+          <div class="dot dot-green"></div>
+          <span>Server: <strong id="server-ip">...</strong></span>
+        </div>
+        <div class="status-item">
+          <div class="dot dot-blue" id="socket-dot"></div>
+          <span id="socket-status">WebSocket: Connecting...</span>
+        </div>
+        <div class="status-item">
+          <div class="dot" id="bt-dot" style="background:var(--clr-text-dim)"></div>
+          <span id="bt-status">Bluetooth: Unknown</span>
+        </div>
+        <div class="status-item" style="margin-left:auto">
+          <span class="text-muted">Online:</span>
+          <strong id="online-count">0</strong>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <div class="action-card" onclick="window.location.href='/chat'">
+          <div class="action-icon">💬</div>
+          <h3>Open Chat</h3>
+          <p>Send messages and files to online peers</p>
+        </div>
+        <div class="action-card" onclick="window.location.href='/bluetooth'">
+          <div class="action-icon">🔵</div>
+          <h3>Bluetooth</h3>
+          <p>Connect via Bluetooth Low Energy (BLE)</p>
+        </div>
+        <div class="action-card" onclick="window.location.href='/history'">
+          <div class="action-icon">📜</div>
+          <h3>Transfer History</h3>
+          <p>View past file transfers and messages</p>
+        </div>
+        <div class="action-card" onclick="openGroupModal()">
+          <div class="action-icon">👥</div>
+          <h3>Create Group</h3>
+          <p>Start a group chat with multiple users</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Create Group Modal -->
+  <div class="modal-overlay hidden" id="group-modal">
+    <div class="modal">
+      <h2>👥 Create Group</h2>
+      <div id="group-error" class="alert alert-error hidden"></div>
+      <div class="form-group">
+        <label>Group Name</label>
+        <input type="text" id="group-name-input" placeholder="e.g., Project Team" maxlength="60" />
+      </div>
+      <div class="form-group">
+        <label>Add Members</label>
+        <div id="member-checkboxes" style="max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:.4rem"></div>
+      </div>
+      <div class="flex gap-3 mt-4">
+        <button onclick="createGroup()" class="btn btn-primary">Create Group</button>
+        <button onclick="closeGroupModal()" class="btn btn-ghost">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="/js/utils.js"></script>
+  <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+  <script src="/js/socket-client.js"></script>
+  <script>
+    let allUsers    = [];
+    let onlineIds   = new Set();
+    let myUser      = null;
+
+    // ── Init ──────────────────────────────────────────────────────────────
+    async function init() {
+      // Verify auth
+      const res  = await fetch('/api/auth/me', { credentials: 'include' });
+      if (!res.ok) { window.location.href = '/auth'; return; }
+      const data = await res.json();
+      myUser = data.user;
+
+      sessionStorage.setItem('proxilink_user', JSON.stringify(myUser));
+      document.getElementById('user-display-name').textContent = myUser.display_name;
+      document.getElementById('nav-username').textContent = myUser.display_name;
+      document.getElementById('server-ip').textContent = window.location.host;
+
+      checkBluetooth();
+      loadAllUsers();
+      loadGroups();
+      initSocket();
+    }
+
+    function checkBluetooth() {
+      const dot    = document.getElementById('bt-dot');
+      const status = document.getElementById('bt-status');
+      if (navigator.bluetooth) {
+        dot.style.background = 'var(--clr-success)';
+        status.textContent   = 'Bluetooth: Available (Chrome)';
+      } else {
+        dot.style.background = 'var(--clr-warning)';
+        status.textContent   = 'Bluetooth: Use Chrome for BLE';
+      }
+    }
+
+    async function loadAllUsers() {
+      try {
+        const res  = await fetch('/api/users', { credentials: 'include' });
+        if (!res.ok) return;
+        const data = await res.json();
+        allUsers   = data.users;
+        renderUserLists();
+      } catch { /* ignore */ }
+    }
+
+    async function loadGroups() {
+      try {
+        const res  = await fetch('/api/groups', { credentials: 'include' });
+        if (!res.ok) return;
+        const data = await res.json();
+        renderGroups(data.groups);
+      } catch { /* ignore */ }
+    }
+
+    function renderUserLists(filter = '') {
+      const lc = filter.toLowerCase();
+      const filtered = allUsers.filter(u =>
+        u.display_name.toLowerCase().includes(lc) ||
+        u.username.toLowerCase().includes(lc)
+      );
+
+      const online  = filtered.filter(u => onlineIds.has(u.user_id));
+      const offline = filtered.filter(u => !onlineIds.has(u.user_id));
+
+      document.getElementById('online-count').textContent = onlineIds.size;
+
+      const onlineEl = document.getElementById('online-list');
+      onlineEl.innerHTML = online.length
+        ? online.map(u => userItemHTML(u, true)).join('')
+        : '<p class="text-muted text-sm" style="padding:.5rem">No online users.</p>';
+
+      const allEl = document.getElementById('all-users-list');
+      allEl.innerHTML = offline.length
+        ? offline.map(u => userItemHTML(u, false)).join('')
+        : '<p class="text-muted text-sm" style="padding:.5rem">No other users registered.</p>';
+    }
+
+    function userItemHTML(u, isOnline) {
+      const initials = u.display_name.slice(0, 2).toUpperCase();
+      return `
+        <div class="user-item" onclick="openChat(${u.user_id}, '${escHtml(u.display_name)}')">
+          <div class="avatar" style="background:${u.avatar_color}">${initials}</div>
+          <div class="user-info">
+            <div class="user-name">${escHtml(u.display_name)}</div>
+            <div class="user-meta">@${escHtml(u.username)}</div>
+          </div>
+          <div class="status-dot ${isOnline ? 'online' : 'offline'}"></div>
+        </div>`;
+    }
+
+    function renderGroups(groups) {
+      const el = document.getElementById('group-list');
+      if (!groups.length) { el.innerHTML = '<p class="text-muted text-sm" style="padding:.5rem">No groups.</p>'; return; }
+      el.innerHTML = groups.map(g => `
+        <div class="user-item" onclick="openGroupChat(${g.group_id}, '${escHtml(g.group_name)}')">
+          <div class="avatar" style="background:var(--clr-primary)">G</div>
+          <div class="user-info">
+            <div class="user-name">${escHtml(g.group_name)}</div>
+            <div class="user-meta">${g.member_count} members</div>
+          </div>
+        </div>`).join('');
+    }
+
+    function filterUsers(val) { renderUserLists(val); }
+
+    function openChat(userId, name) {
+      sessionStorage.setItem('chat_peer_id',   userId);
+      sessionStorage.setItem('chat_peer_name', name);
+      sessionStorage.setItem('chat_mode',      'direct');
+      window.location.href = '/chat';
+    }
+
+    function openGroupChat(groupId, name) {
+      sessionStorage.setItem('chat_peer_id',   groupId);
+      sessionStorage.setItem('chat_peer_name', name);
+      sessionStorage.setItem('chat_mode',      'group');
+      window.location.href = '/chat';
+    }
+
+    // ── Group Modal ───────────────────────────────────────────────────────
+    function openGroupModal() {
+      document.getElementById('group-modal').classList.remove('hidden');
+      const container = document.getElementById('member-checkboxes');
+      container.innerHTML = allUsers.map(u => `
+        <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.875rem">
+          <input type="checkbox" value="${u.user_id}" style="width:auto" />
+          ${escHtml(u.display_name)} (@${escHtml(u.username)})
+        </label>`).join('');
+    }
+
+    function closeGroupModal() {
+      document.getElementById('group-modal').classList.add('hidden');
+      document.getElementById('group-error').classList.add('hidden');
+      document.getElementById('group-name-input').value = '';
+    }
+
+    async function createGroup() {
+      const name = document.getElementById('group-name-input').value.trim();
+      if (!name) { showGroupError('Group name is required.'); return; }
+
+      const checked = [...document.querySelectorAll('#member-checkboxes input:checked')].map(c => c.value);
+
+      try {
+        const res = await fetch('/api/groups', {
+          method:      'POST',
+          headers:     { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body:        JSON.stringify({ group_name: name, member_ids: checked })
+        });
+        const data = await res.json();
+        if (!res.ok) { showGroupError(data.error || 'Failed to create group.'); return; }
+        closeGroupModal();
+        showToast('Group "' + name + '" created!', 'success');
+        loadGroups();
+      } catch { showGroupError('Network error.'); }
+    }
+
+    function showGroupError(msg) {
+      const el = document.getElementById('group-error');
+      el.textContent = msg; el.classList.remove('hidden');
+    }
+
+    // ── Socket: update online list ────────────────────────────────────────
+    function onUserList(data) {
+      onlineIds = new Set(data.onlineUserIds);
+      renderUserLists(document.getElementById('search-input').value);
+      document.getElementById('ws-dot').className = 'dot dot-green';
+      document.getElementById('ws-status-text').textContent = 'Connected';
+      document.getElementById('socket-status').textContent = 'WebSocket: ✓ Connected';
+    }
+
+    async function logout() {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+      sessionStorage.clear();
+      window.location.href = '/';
+    }
+
+    init();
+  </script>
+</body>
+</html>

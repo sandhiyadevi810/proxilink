@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard – ProxiLink Wireless Platform</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <style>
+    .welcome-banner {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(99, 102, 241, 0.2) 100%);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem 2rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .status-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .quick-access-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .quick-card {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    .quick-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: var(--shadow-glow);
+    }
+    .quick-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="navbar">
+    <div class="brand-container">
+      <a href="dashboard.html" class="flex items-center gap-2">
+        <div class="brand-logo">
+          <i class="fa-solid fa-link" style="color:#FFF"></i>
+        </div>
+        <span class="brand-text">Proxi<span>Link</span></span>
+      </a>
+    </div>
+
+    <div class="nav-actions">
+      <button class="btn btn-ghost btn-sm theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+        <i class="fa-solid fa-sun"></i>
+      </button>
+
+      <!-- User Profile Badge -->
+      <div class="flex items-center gap-2" style="background:var(--bg-input);padding:0.35rem 0.75rem;border-radius:var(--radius-pill);border:1px solid var(--border-subtle)">
+        <div class="user-avatar-initials" style="width:28px;height:28px;border-radius:50%;background:var(--primary);color:#FFF;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700">
+          U
+        </div>
+        <span class="user-display-name text-sm" style="font-weight:600">User</span>
+      </div>
+
+      <button onclick="handleLogout()" class="btn btn-outline btn-sm" title="Logout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+      </button>
+    </div>
+  </nav>
+
+  <!-- Dashboard Shell -->
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-heading">Platform</div>
+      <a href="dashboard.html" class="sidebar-nav-item active">
+        <i class="fa-solid fa-gauge-high"></i> <span>Dashboard</span>
+      </a>
+      <a href="wifi.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-wifi"></i> <span>Wi-Fi P2P</span>
+      </a>
+      <a href="bluetooth.html" class="sidebar-nav-item">
+        <i class="fa-brands fa-bluetooth-b"></i> <span>Bluetooth BLE</span>
+      </a>
+      <a href="chat.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-comments"></i> <span>Messaging</span>
+      </a>
+      <a href="files.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-file-arrow-up"></i> <span>File Sharing</span>
+      </a>
+
+      <div class="sidebar-heading" style="margin-top:1rem">Audit &amp; Config</div>
+      <a href="history.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-clock-rotate-left"></i> <span>Transfer History</span>
+      </a>
+      <a href="settings.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-gear"></i> <span>Settings</span>
+      </a>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Welcome Banner -->
+      <section class="welcome-banner">
+        <h2>👋 Welcome, <span class="user-display-name gradient-text">User</span>!</h2>
+        <p style="margin-top:0.4rem;max-width:650px">
+          ProxiLink is operating in <strong>zero-cloud offline mode</strong>. All messaging and file transmissions occur directly across your local network and Bluetooth interfaces.
+        </p>
+      </section>
+
+      <!-- Connection Status Overview -->
+      <section class="status-cards-grid">
+        <!-- Wi-Fi Card -->
+        <div class="card">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-muted" style="text-transform:uppercase;font-weight:700">Wi-Fi LAN Interface</span>
+            <span class="status-dot online"></span>
+          </div>
+          <div style="font-size:1.4rem;font-weight:800;margin:0.5rem 0" id="stat-wifi-ip">127.0.0.1</div>
+          <div class="text-xs text-muted">Subnet active • Ready for P2P</div>
+        </div>
+
+        <!-- Bluetooth Card -->
+        <div class="card">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-muted" style="text-transform:uppercase;font-weight:700">Bluetooth BLE Status</span>
+            <span class="status-dot online" id="stat-bt-dot"></span>
+          </div>
+          <div style="font-size:1.15rem;font-weight:700;margin:0.65rem 0" id="stat-bt-status">Checking BLE...</div>
+          <div class="text-xs text-muted">Web Bluetooth GATT Ready</div>
+        </div>
+
+        <!-- WebSocket Signalling -->
+        <div class="card">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-muted" style="text-transform:uppercase;font-weight:700">Signalling State</span>
+            <span class="status-dot online"></span>
+          </div>
+          <div style="font-size:1.4rem;font-weight:800;margin:0.5rem 0">Online</div>
+          <div class="text-xs text-muted">Local WebSocket presence active</div>
+        </div>
+      </section>
+
+      <!-- Quick Access Hub -->
+      <h3 style="margin-bottom:1rem">Quick Access Hub</h3>
+      <section class="quick-access-grid">
+        <a href="wifi.html" class="card quick-card">
+          <div class="quick-icon" style="background:rgba(59,130,246,0.15);color:var(--secondary)">
+            <i class="fa-solid fa-wifi"></i>
+          </div>
+          <h4>Wi-Fi Manager</h4>
+          <p class="text-sm">Scan and establish WebRTC P2P direct channels</p>
+        </a>
+
+        <a href="bluetooth.html" class="card quick-card">
+          <div class="quick-icon" style="background:rgba(139,92,246,0.15);color:var(--accent)">
+            <i class="fa-brands fa-bluetooth-b"></i>
+          </div>
+          <h4>Bluetooth Pair</h4>
+          <p class="text-sm">Discover and chat with nearby BLE peripherals</p>
+        </a>
+
+        <a href="chat.html" class="card quick-card">
+          <div class="quick-icon" style="background:rgba(99,102,241,0.15);color:var(--primary)">
+            <i class="fa-solid fa-comments"></i>
+          </div>
+          <h4>Messaging</h4>
+          <p class="text-sm">Start one-to-one or group encrypted conversations</p>
+        </a>
+
+        <a href="files.html" class="card quick-card">
+          <div class="quick-icon" style="background:rgba(16,185,129,0.15);color:var(--success)">
+            <i class="fa-solid fa-file-arrow-up"></i>
+          </div>
+          <h4>File Sharing</h4>
+          <p class="text-sm">Transmit images, videos, and PDFs up to 500 MB</p>
+        </a>
+      </section>
+
+      <!-- 2-Column Activity: Recent Chats & Recent Transfers -->
+      <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem;">
+        <!-- Recent Chats -->
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title"><i class="fa-solid fa-comments text-primary"></i> Recent Conversations</h4>
+            <a href="chat.html" class="btn btn-ghost btn-sm">View All</a>
+          </div>
+          <div id="recent-chats-list" class="flex flex-col gap-2">
+            <div class="text-center text-muted text-sm" style="padding:1.5rem">
+              <i class="fa-solid fa-spinner fa-spin"></i> Loading contacts...
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Transfers -->
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title"><i class="fa-solid fa-clock-rotate-left text-secondary"></i> Recent File Transfers</h4>
+            <a href="history.html" class="btn btn-ghost btn-sm">Audit Log</a>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>File</th>
+                  <th>Size</th>
+                  <th>Medium</th>
+                  <th>Status</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody id="recent-transfers-tbody">
+                <tr>
+                  <td colspan="5" class="text-center text-muted" style="padding:1.5rem">
+                    <i class="fa-solid fa-spinner fa-spin"></i> Loading transfer records...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="js/main.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

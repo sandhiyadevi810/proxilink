@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register – ProxiLink Wireless Platform</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% 20%, rgba(99, 102, 241, 0.15) 0%, var(--bg-main) 65%);
+      padding: 1.5rem;
+    }
+    .auth-container {
+      width: 100%;
+      max-width: 480px;
+      margin: auto;
+    }
+    .auth-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .auth-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-lg);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-container">
+    <div class="auth-header">
+      <a href="index.html" class="flex items-center justify-center gap-2" style="margin-bottom: 1rem;">
+        <div class="brand-logo" style="width:42px;height:42px">
+          <i class="fa-solid fa-link" style="color:#FFF;font-size:1.15rem"></i>
+        </div>
+        <span class="brand-text" style="font-size:1.6rem">Proxi<span>Link</span></span>
+      </a>
+      <h2>Create Offline Profile</h2>
+      <p>Set up your device identity for peer discovery and messaging</p>
+    </div>
+
+    <div class="card auth-card">
+      <div id="auth-alert" class="hidden"></div>
+
+      <form id="register-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="display_name">Display Name *</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-id-badge"></i>
+            <input type="text" id="display_name" class="form-control" placeholder="e.g., Alex Johnson" required />
+          </div>
+          <span class="text-xs text-muted" style="margin-top:0.25rem;display:block">This is the name visible to neighboring peers.</span>
+        </div>
+
+        <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label" for="username">Username *</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-at"></i>
+              <input type="text" id="username" class="form-control" placeholder="alex_99" autocomplete="username" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="email">Email (Optional)</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-envelope"></i>
+              <input type="email" id="email" class="form-control" placeholder="alex@local.net" autocomplete="email" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password *</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="password" class="form-control" placeholder="Minimum 6 characters" autocomplete="new-password" required />
+            <button type="button" class="password-toggle-btn" data-target="password" title="Toggle visibility">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="confirm_password">Confirm Password *</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-shield-check"></i>
+            <input type="password" id="confirm_password" class="form-control" placeholder="Re-enter password" autocomplete="new-password" required />
+            <button type="button" class="password-toggle-btn" data-target="confirm_password" title="Toggle visibility">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg" id="register-btn" style="margin-top: 1.5rem;">
+          Create Account
+        </button>
+      </form>
+
+      <div class="text-center" style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-subtle); font-size: 0.88rem;">
+        <span class="text-muted">Already registered?</span>
+        <a href="login.html" style="font-weight: 600; margin-left: 0.35rem;">Sign In</a>
+      </div>
+    </div>
+
+    <div class="text-center" style="margin-top: 1.5rem;">
+      <a href="index.html" class="text-sm text-muted">
+        <i class="fa-solid fa-arrow-left"></i> Return to Homepage
+      </a>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="js/main.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

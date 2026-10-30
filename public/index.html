@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProxiLink – Offline Wireless Communication</title>
+  <meta name="description" content="ProxiLink lets nearby devices communicate and share files over Wi-Fi or Bluetooth without internet." />
+  <link rel="stylesheet" href="/css/main.css" />
+  <style>
+    /* Landing page specific styles */
+    .hero {
+      text-align: center;
+      padding: 5rem 1.5rem 3rem;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: rgba(99,102,241,.15);
+      border: 1px solid rgba(99,102,241,.3);
+      color: var(--clr-primary);
+      padding: .35rem .9rem;
+      border-radius: var(--radius-pill);
+      font-size: .8rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 { margin-bottom: 1rem; }
+    .hero h1 .accent { color: var(--clr-primary); }
+    .hero .sub {
+      font-size: 1.1rem;
+      max-width: 560px;
+      margin: 0 auto 2.5rem;
+      color: var(--clr-text-muted);
+    }
+    .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    /* Animated glow blob */
+    .hero-blob {
+      position: absolute;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,.2) 0%, transparent 70%);
+      top: 0; left: 50%; transform: translateX(-50%);
+      pointer-events: none;
+      animation: pulse 4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform: translateX(-50%) scale(1); opacity:.5; }
+      50%      { transform: translateX(-50%) scale(1.1); opacity:.8; }
+    }
+
+    /* Feature cards */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      max-width: 1000px;
+      margin: 0 auto 4rem;
+      padding: 0 1.5rem;
+    }
+    .feature-card {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem 1.5rem;
+      transition: transform var(--trans-med), box-shadow var(--trans-med);
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-glow);
+      border-color: var(--clr-primary);
+    }
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: .75rem;
+    }
+    .feature-card h3 { margin-bottom: .4rem; font-size: 1rem; }
+    .feature-card p  { font-size: .875rem; }
+
+    /* Stats */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+      padding: 2.5rem 1.5rem;
+      border-top: 1px solid var(--clr-border);
+      border-bottom: 1px solid var(--clr-border);
+      margin-bottom: 4rem;
+    }
+    .stat { text-align: center; }
+    .stat .val { font-size: 2rem; font-weight: 800; color: var(--clr-primary); }
+    .stat .lbl { font-size: .8rem; color: var(--clr-text-muted); }
+
+    .footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--clr-text-muted);
+      font-size: .8rem;
+      border-top: 1px solid var(--clr-border);
+    }
+
+    body { position: relative; overflow-x: hidden; }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="brand">🔗 Proxi<span>Link</span></div>
+    <div class="nav-links">
+      <a href="/auth" class="btn btn-ghost btn-sm">Login</a>
+      <a href="/auth?tab=register" class="btn btn-primary btn-sm">Get Started</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero-blob"></div>
+  <section class="hero">
+    <div class="hero-badge">📡 No Internet Required</div>
+    <h1>Connect Without<br><span class="accent">Internet.</span></h1>
+    <p class="sub">ProxiLink enables real-time messaging and file sharing between nearby devices using only your local Wi-Fi network or Bluetooth — no cloud, no data charges.</p>
+    <div class="hero-actions">
+      <a href="/auth?tab=register" class="btn btn-primary btn-lg">🚀 Get Started</a>
+      <a href="/auth" class="btn btn-ghost btn-lg">Login</a>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat"><div class="val">0ms</div><div class="lbl">Internet Needed</div></div>
+    <div class="stat"><div class="val">500MB</div><div class="lbl">Max File Size</div></div>
+    <div class="stat"><div class="val">LAN</div><div class="lbl">Speed Transfer</div></div>
+    <div class="stat"><div class="val">100%</div><div class="lbl">Private &amp; Local</div></div>
+  </div>
+
+  <!-- Features -->
+  <section class="features">
+    <div class="feature-card">
+      <div class="feature-icon">📶</div>
+      <h3>Wi-Fi Messaging</h3>
+      <p>Chat and share files over any local Wi-Fi network using WebRTC for direct peer-to-peer transfer.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔵</div>
+      <h3>Bluetooth (BLE)</h3>
+      <p>Discover and exchange messages with nearby Bluetooth devices using the Web Bluetooth API.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💬</div>
+      <h3>Group Chats</h3>
+      <p>Create groups and send messages to multiple people on the same local network simultaneously.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📁</div>
+      <h3>File Sharing</h3>
+      <p>Share images, PDFs, and documents with real-time progress tracking and no upload limits.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📜</div>
+      <h3>Message History</h3>
+      <p>All messages are stored locally in SQLite — review past conversations any time offline.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>Secure &amp; Private</h3>
+      <p>Your data never leaves your local network. WebRTC uses DTLS encryption for all transfers.</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>© 2026 ProxiLink — Offline Wireless Communication Platform &nbsp;|&nbsp; Local Network Only</p>
+  </footer>
+
+  <div id="toast-container"></div>
+</body>
+</html>

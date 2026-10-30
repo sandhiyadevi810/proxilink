@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login – ProxiLink Wireless Platform</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% 20%, rgba(99, 102, 241, 0.15) 0%, var(--bg-main) 65%);
+      padding: 1.5rem;
+    }
+    .auth-container {
+      width: 100%;
+      max-width: 440px;
+      margin: auto;
+    }
+    .auth-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .auth-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-lg);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-container">
+    <div class="auth-header">
+      <a href="index.html" class="flex items-center justify-center gap-2" style="margin-bottom: 1rem;">
+        <div class="brand-logo" style="width:42px;height:42px">
+          <i class="fa-solid fa-link" style="color:#FFF;font-size:1.15rem"></i>
+        </div>
+        <span class="brand-text" style="font-size:1.6rem">Proxi<span>Link</span></span>
+      </a>
+      <h2>Welcome Back</h2>
+      <p>Log in to access your offline wireless dashboard</p>
+    </div>
+
+    <div class="card auth-card">
+      <div id="auth-alert" class="hidden"></div>
+
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="username">Username or Email</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="username" class="form-control" placeholder="Enter username or email" autocomplete="username" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="flex justify-between items-center" style="margin-bottom: 0.45rem;">
+            <label class="form-label" for="password" style="margin-bottom:0">Password</label>
+            <span class="text-xs text-muted">Offline credentials</span>
+          </div>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="password" class="form-control" placeholder="••••••••" autocomplete="current-password" required />
+            <button type="button" class="password-toggle-btn" data-target="password" title="Toggle visibility">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg" id="login-btn" style="margin-top: 1.5rem;">
+          Sign In
+        </button>
+      </form>
+
+      <div class="text-center" style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-subtle); font-size: 0.88rem;">
+        <span class="text-muted">Don't have an offline profile?</span>
+        <a href="register.html" style="font-weight: 600; margin-left: 0.35rem;">Create Account</a>
+      </div>
+    </div>
+
+    <div class="text-center" style="margin-top: 1.5rem;">
+      <a href="index.html" class="text-sm text-muted">
+        <i class="fa-solid fa-arrow-left"></i> Return to Homepage
+      </a>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="js/main.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProxiLink – Offline Wireless Communication &amp; File Sharing</title>
+  <meta name="description" content="ProxiLink is a modern peer-to-peer wireless platform enabling nearby devices to message and share files over Wi-Fi and Bluetooth without internet." />
+  
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <style>
+    /* Hero section visual flourishes */
+    .hero-section {
+      position: relative;
+      padding: 6rem 2rem 4rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .hero-glow-blob {
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(59, 130, 246, 0.15) 50%, transparent 70%);
+      filter: blur(50px);
+      z-index: -1;
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-pill);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+    }
+    .feature-card {
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--primary);
+      box-shadow: var(--shadow-glow);
+    }
+    .feature-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      margin-bottom: 0.5rem;
+    }
+    .stats-banner {
+      background: var(--bg-surface-solid);
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 3rem 1.5rem;
+      margin: 4rem 0;
+    }
+    .stats-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .connection-modes-section {
+      max-width: 1100px;
+      margin: 4rem auto;
+      padding: 0 1.5rem;
+    }
+    .modes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    .mode-card {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      background: var(--bg-surface);
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="brand-container">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="brand-logo">
+          <i class="fa-solid fa-link" style="color:#FFF"></i>
+        </div>
+        <span class="brand-text">Proxi<span>Link</span></span>
+      </a>
+    </div>
+
+    <!-- Center Nav Links -->
+    <ul class="nav-menu">
+      <li><a href="index.html" class="nav-link active"><i class="fa-solid fa-house"></i> Home</a></li>
+      <li><a href="wifi.html" class="nav-link"><i class="fa-solid fa-wifi"></i> Wi-Fi P2P</a></li>
+      <li><a href="bluetooth.html" class="nav-link"><i class="fa-solid fa-bluetooth-b"></i> Bluetooth</a></li>
+      <li><a href="chat.html" class="nav-link"><i class="fa-solid fa-comments"></i> Chat</a></li>
+      <li><a href="files.html" class="nav-link"><i class="fa-solid fa-file-arrow-up"></i> Share Files</a></li>
+    </ul>
+
+    <!-- Right Actions -->
+    <div class="nav-actions">
+      <button class="btn btn-ghost btn-sm theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+        <i class="fa-solid fa-sun"></i>
+      </button>
+      <a href="login.html" class="btn btn-outline btn-sm">Login</a>
+      <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
+      <button class="btn btn-ghost btn-icon nav-toggle-btn" style="display:none">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero-section">
+    <div class="hero-glow-blob"></div>
+    <div class="hero-badge">
+      <i class="fa-solid fa-shield-halved"></i> 100% Offline • Zero Internet Dependency
+    </div>
+    <h1>Direct Wireless Connection<br><span class="gradient-text">Without The Internet.</span></h1>
+    <p style="max-width: 680px; margin: 1.25rem auto 2.25rem; font-size: 1.15rem;">
+      ProxiLink enables neighboring devices to exchange real-time messages and high-capacity files using direct 
+      local Wi-Fi networks and Bluetooth Low Energy — completely private, secure, and carrier-free.
+    </p>
+    <div class="flex justify-center gap-4 hero-buttons" style="flex-wrap: wrap;">
+      <a href="dashboard.html" class="btn btn-primary btn-lg">
+        <i class="fa-solid fa-gauge-high"></i> Launch Platform
+      </a>
+      <a href="wifi.html" class="btn btn-secondary btn-lg">
+        <i class="fa-solid fa-wifi"></i> Connect via Wi-Fi
+      </a>
+      <a href="bluetooth.html" class="btn btn-outline btn-lg">
+        <i class="fa-brands fa-bluetooth-b"></i> Scan Bluetooth
+      </a>
+    </div>
+  </header>
+
+  <!-- Connection Modes Comparison -->
+  <section class="connection-modes-section">
+    <div class="text-center">
+      <span class="badge badge-primary">Flexible Wireless Architecture</span>
+      <h2 style="margin-top: 0.5rem;">Choose Your Wireless Medium</h2>
+      <p>ProxiLink provides dual-mode wireless capabilities tailored to distance and speed needs.</p>
+    </div>
+
+    <div class="modes-grid">
+      <!-- Wi-Fi Mode Card -->
+      <div class="mode-card">
+        <div class="flex items-center justify-between" style="margin-bottom: 1rem;">
+          <div class="feature-icon-box" style="background: rgba(59, 130, 246, 0.15); color: var(--secondary)">
+            <i class="fa-solid fa-wifi"></i>
+          </div>
+          <span class="proto-badge proto-wifi">Up to 300 Mbps</span>
+        </div>
+        <h3>Wi-Fi Peer-to-Peer</h3>
+        <p style="margin: 0.75rem 0 1.25rem;">
+          Connect over any local Wi-Fi router, mobile hotspot, or ad-hoc subnet. High-bandwidth WebRTC data channels stream large images, videos, and PDFs up to 500 MB.
+        </p>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.88rem; margin-bottom: 1.5rem;">
+          <li><i class="fa-solid fa-circle-check text-success"></i> WebRTC direct browser P2P transfer</li>
+          <li><i class="fa-solid fa-circle-check text-success"></i> 64KB chunking with backpressure flow control</li>
+          <li><i class="fa-solid fa-circle-check text-success"></i> DTLS encryption across local LAN</li>
+        </ul>
+        <a href="wifi.html" class="btn btn-secondary btn-full">Open Wi-Fi Console</a>
+      </div>
+
+      <!-- Bluetooth Mode Card -->
+      <div class="mode-card">
+        <div class="flex items-center justify-between" style="margin-bottom: 1rem;">
+          <div class="feature-icon-box" style="background: rgba(139, 92, 246, 0.15); color: var(--accent)">
+            <i class="fa-brands fa-bluetooth-b"></i>
+          </div>
+          <span class="proto-badge proto-bt">Zero Router Needed</span>
+        </div>
+        <h3>Bluetooth Low Energy</h3>
+        <p style="margin: 0.75rem 0 1.25rem;">
+          Discover nearby devices directly without any Wi-Fi infrastructure. Utilize Web Bluetooth API in Chromium browsers for short telemetry packets and status signals.
+        </p>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.88rem; margin-bottom: 1.5rem;">
+          <li><i class="fa-solid fa-circle-check text-success"></i> Standard GATT peripheral discovery</li>
+          <li><i class="fa-solid fa-circle-check text-success"></i> Works in areas with zero cell/router coverage</li>
+          <li><i class="fa-solid fa-circle-check text-success"></i> Native Android RFCOMM bridge available</li>
+        </ul>
+        <a href="bluetooth.html" class="btn btn-outline btn-full">Scan Bluetooth</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Statistics -->
+  <section class="stats-banner">
+    <div class="stats-grid">
+      <div>
+        <div class="stat-number">0 KB</div>
+        <div class="text-muted text-sm">Internet Data Used</div>
+      </div>
+      <div>
+        <div class="stat-number">500 MB</div>
+        <div class="text-muted text-sm">Max File Capacity</div>
+      </div>
+      <div>
+        <div class="stat-number">64 KB</div>
+        <div class="text-muted text-sm">P2P Chunk Slicing</div>
+      </div>
+      <div>
+        <div class="stat-number">100%</div>
+        <div class="text-muted text-sm">Local SQLite Persistence</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Grid -->
+  <section class="features-section" style="max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;">
+    <div class="text-center">
+      <span class="badge badge-secondary">Core Capabilities</span>
+      <h2 style="margin-top: 0.5rem;">Engineered for True Offline Autonomy</h2>
+    </div>
+
+    <div class="features-grid">
+      <!-- 1 -->
+      <div class="card feature-card">
+        <div class="feature-icon-box" style="background: rgba(99, 102, 241, 0.15); color: var(--primary)">
+          <i class="fa-solid fa-comment-dots"></i>
+        </div>
+        <h3>1-to-1 Instant Chat</h3>
+        <p>Real-time bidirectional text messaging with typing indicators, double checkmark delivery status, and emoji support.</p>
+      </div>
+
+      <!-- 2 -->
+      <div class="card feature-card">
+        <div class="feature-icon-box" style="background: rgba(59, 130, 246, 0.15); color: var(--secondary)">
+          <i class="fa-solid fa-users"></i>
+        </div>
+        <h3>Local Group Messaging</h3>
+        <p>Broadcast messages simultaneously to all group members on the same local subnet without cloud relays.</p>
+      </div>
+
+      <!-- 3 -->
+      <div class="card feature-card">
+        <div class="feature-icon-box" style="background: rgba(16, 185, 129, 0.15); color: var(--success)">
+          <i class="fa-solid fa-file-arrow-up"></i>
+        </div>
+        <h3>High-Capacity File Sharing</h3>
+        <p>Stream images, documents, and archives with live percentage progress bars and instant local file downloads.</p>
+      </div>
+
+      <!-- 4 -->
+      <div class="card feature-card">
+        <div class="feature-icon-box" style="background: rgba(245, 158, 11, 0.15); color: var(--warning)">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </div>
+        <h3>Transfer History &amp; Audits</h3>
+        <p>Complete historical log of all offline transactions stored securely in a local SQLite database for instant retrieval.</p>
+      </div>
+
+      <!-- 5 -->
+      <div class="card feature-card">
+        <div class="feature-icon-box" style="background: rgba(139, 92, 246, 0.15); color: var(--accent)">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <h3>Private &amp; Self-Contained</h3>
+        <p>No analytics trackers, third-party CDNs, or external cloud telemetry. Your private data never traverses the internet.</p>
+      </div>
+
+      <!-- 6 -->
+      <div class="card feature-card">
+        <div class="feature-icon-box" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan)">
+          <i class="fa-solid fa-mobile-screen-button"></i>
+        </div>
+        <h3>Android &amp; Desktop Ready</h3>
+        <p>Fully responsive UI designed for smartphones, tablets, and desktops, with companion native Android wireless services.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="flex items-center gap-2">
+        <div class="brand-logo" style="width:28px;height:28px">
+          <i class="fa-solid fa-link" style="color:#FFF;font-size:0.9rem"></i>
+        </div>
+        <span class="brand-text" style="font-size:1.15rem">Proxi<span>Link</span></span>
+      </div>
+      <p style="max-width: 500px; font-size: 0.85rem;">
+        Offline Wireless Communication and File Sharing Platform. Designed and engineered for resilient, zero-internet device connectivity.
+      </p>
+      <ul class="footer-links">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="wifi.html">Wi-Fi Manager</a></li>
+        <li><a href="bluetooth.html">Bluetooth</a></li>
+        <li><a href="chat.html">Chat</a></li>
+        <li><a href="files.html">Files</a></li>
+        <li><a href="history.html">History</a></li>
+        <li><a href="settings.html">Settings</a></li>
+      </ul>
+      <div class="footer-copy">
+        &copy; 2026 ProxiLink Project • Final Year Engineering Project • All Rights Reserved.
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast-container"></div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

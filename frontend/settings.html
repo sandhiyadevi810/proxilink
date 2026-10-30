@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings – ProxiLink Wireless Platform</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <nav class="navbar">
+    <div class="brand-container">
+      <a href="dashboard.html" class="flex items-center gap-2">
+        <div class="brand-logo">
+          <i class="fa-solid fa-link" style="color:#FFF"></i>
+        </div>
+        <span class="brand-text">Proxi<span>Link</span></span>
+      </a>
+    </div>
+
+    <div class="nav-actions">
+      <button class="btn btn-ghost btn-sm theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+        <i class="fa-solid fa-sun"></i>
+      </button>
+      <a href="dashboard.html" class="btn btn-ghost btn-sm">
+        <i class="fa-solid fa-arrow-left"></i> Dashboard
+      </a>
+    </div>
+  </nav>
+
+  <!-- Dashboard Shell -->
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-heading">Platform</div>
+      <a href="dashboard.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-gauge-high"></i> <span>Dashboard</span>
+      </a>
+      <a href="wifi.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-wifi"></i> <span>Wi-Fi P2P</span>
+      </a>
+      <a href="bluetooth.html" class="sidebar-nav-item">
+        <i class="fa-brands fa-bluetooth-b"></i> <span>Bluetooth BLE</span>
+      </a>
+      <a href="chat.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-comments"></i> <span>Messaging</span>
+      </a>
+      <a href="files.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-file-arrow-up"></i> <span>File Sharing</span>
+      </a>
+
+      <div class="sidebar-heading" style="margin-top:1rem">Audit &amp; Config</div>
+      <a href="history.html" class="sidebar-nav-item">
+        <i class="fa-solid fa-clock-rotate-left"></i> <span>Transfer History</span>
+      </a>
+      <a href="settings.html" class="sidebar-nav-item active">
+        <i class="fa-solid fa-gear"></i> <span>Settings</span>
+      </a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div style="margin-bottom: 2rem">
+        <h2>⚙️ Platform &amp; Wireless Settings</h2>
+        <p>Configure device identity, transmission buffer limits, UI appearance, and local storage.</p>
+      </div>
+
+      <div class="grid settings-grid" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem;">
+        <!-- 1. User Profile -->
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title"><i class="fa-solid fa-user-gear text-primary"></i> Peer Identity Profile</h4>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="setting-display-name">Display Name (Visible on LAN)</label>
+            <input type="text" id="setting-display-name" class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="setting-username">Username</label>
+            <input type="text" id="setting-username" class="form-control" disabled style="opacity:0.7;cursor:not-allowed" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="setting-avatar-color">Avatar Node Accent Color</label>
+            <div class="flex items-center gap-3">
+              <input type="color" id="setting-avatar-color" style="width:48px;height:40px;border:none;border-radius:var(--radius-xs);cursor:pointer;background:transparent" />
+              <span class="text-xs text-muted">Identifies your device avatar in peer discovery lists</span>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" onclick="saveProfileSettings()" style="margin-top:0.5rem">
+            <i class="fa-solid fa-floppy-disk"></i> Save Profile
+          </button>
+        </div>
+
+        <!-- 2. Appearance & Theme -->
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title"><i class="fa-solid fa-palette text-secondary"></i> Appearance &amp; Theme</h4>
+          </div>
+
+          <p class="text-sm" style="margin-bottom:1rem">Select interface color mode for day or night operation:</p>
+
+          <div class="flex flex-col gap-3" style="margin-bottom:1.5rem">
+            <label class="card flex items-center justify-between" style="padding:1rem;cursor:pointer">
+              <div class="flex items-center gap-3">
+                <i class="fa-solid fa-moon text-primary" style="font-size:1.25rem"></i>
+                <div>
+                  <div style="font-weight:600">Dark Navy (Recommended)</div>
+                  <div class="text-xs text-muted">Deep blue/purple palette for low-light environments</div>
+                </div>
+              </div>
+              <input type="radio" name="theme-choice" value="dark" onchange="handleThemeChange('dark')" />
+            </label>
+
+            <label class="card flex items-center justify-between" style="padding:1rem;cursor:pointer">
+              <div class="flex items-center gap-3">
+                <i class="fa-solid fa-sun text-warning" style="font-size:1.25rem"></i>
+                <div>
+                  <div style="font-weight:600">Light Minimalist</div>
+                  <div class="text-xs text-muted">Clean high-contrast theme for outdoor sunlight</div>
+                </div>
+              </div>
+              <input type="radio" name="theme-choice" value="light" onchange="handleThemeChange('light')" />
+            </label>
+          </div>
+        </div>
+
+        <!-- 3. Wireless Transmission Tuning -->
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title"><i class="fa-solid fa-sliders text-accent"></i> Transmission Tuning</h4>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="chunk-size-select">WebRTC Slicing Chunk Size</label>
+            <select id="chunk-size-select" class="form-control">
+              <option value="32">32 KB (Optimal for weak Wi-Fi signals)</option>
+              <option value="64" selected>64 KB (Standard balanced throughput)</option>
+              <option value="128">128 KB (High throughput for Gigabit LAN)</option>
+            </select>
+          </div>
+
+          <div class="form-group flex items-center justify-between" style="margin-top:1.25rem">
+            <div>
+              <div style="font-weight:600;font-size:0.925rem">Auto-Reconnect Peers</div>
+              <div class="text-xs text-muted">Automatically re-negotiate DataChannel if dropped</div>
+            </div>
+            <input type="checkbox" id="auto-reconnect-toggle" checked style="width:20px;height:20px;accent-color:var(--primary)" />
+          </div>
+
+          <button class="btn btn-secondary" onclick="saveNetworkPreferences()" style="margin-top:0.5rem">
+            <i class="fa-solid fa-check"></i> Apply Network Config
+          </button>
+        </div>
+
+        <!-- 4. Privacy, Permissions & Danger Zone -->
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title"><i class="fa-solid fa-shield-halved text-success"></i> Privacy &amp; Local Storage</h4>
+          </div>
+
+          <div class="flex flex-col gap-3" style="margin-bottom:1.5rem">
+            <div class="flex items-center justify-between">
+              <div>
+                <div style="font-weight:600;font-size:0.9rem">Web Bluetooth API</div>
+                <div class="text-xs text-muted">GATT Client permissions</div>
+              </div>
+              <span class="badge badge-success"><i class="fa-solid fa-check"></i> Enabled</span>
+            </div>
+
+            <div class="flex items-center justify-between">
+              <div>
+                <div style="font-weight:600;font-size:0.9rem">Local SQLite WASM Storage</div>
+                <div class="text-xs text-muted">Zero-cloud database persistence</div>
+              </div>
+              <span class="badge badge-success"><i class="fa-solid fa-check"></i> Active</span>
+            </div>
+          </div>
+
+          <div class="flex gap-3" style="flex-wrap:wrap">
+            <button class="btn btn-outline btn-sm" onclick="clearLocalCache()">
+              <i class="fa-solid fa-broom"></i> Clear Cache
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="handleLogout()">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="js/main.js"></script>
+  <script src="js/settings.js"></script>
+</body>
+</html>
